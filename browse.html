@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Browse Projects</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #333;
+      padding: 10px;
+      color: white;
+    }
+    header ul {
+      display: flex;
+      list-style-type: none;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+    }
+    header ul li {
+      margin: 0 15px;
+    }
+    header ul li a {
+      color: white;
+      text-decoration: none;
+    }
+    .featured-projects {
+      padding: 30px;
+      text-align: center;
+    }
+    .featured-projects h2 {
+      margin-bottom: 20px;
+    }
+    .search-bar {
+      margin-bottom: 30px;
+    }
+    .search-bar input[type="text"] {
+      padding: 8px;
+      width: 300px;
+      font-size: 16px;
+    }
+    .search-bar button {
+      padding: 8px 12px;
+      background-color: #f39c12;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .search-bar button:hover {
+      background-color: #e67e22;
+    }
+    .project-card {
+      display: inline-block;
+      width: 250px;
+      margin: 15px;
+      padding: 20px;
+      background: #ecf0f1;
+      border-radius: 8px;
+      vertical-align: top;
+    }
+    .project-card h3 {
+      margin-bottom: 10px;
+    }
+    .project-card p {
+      margin-bottom: 10px;
+    }
+    .project-card a {
+      text-decoration: none;
+      color: #f39c12;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <ul>
+      <li><a href="{{ url_for('index') }}">Home</a></li>
+      {% if 'user_id' in session %}
+        <li><a href="{{ url_for('upload') }}">Upload Project</a></li>
+        <li><a href="{{ url_for('browse') }}">Browse Projects</a></li>
+        {% if session['role'] == 'admin' %}
+          <li><a href="{{ url_for('admin') }}">Admin</a></li>
+        {% endif %}
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        <li><strong>Welcome, {{ session['username'] }}</strong></li>
+      {% else %}
+        <li><a href="{{ url_for('login') }}">Login</a></li>
+        <li><a href="{{ url_for('register') }}">Register</a></li>
+      {% endif %}
+    </ul>
+  </header>
+
+  <section class="featured-projects">
+    <h2>Browse Projects</h2>
+
+    <!-- Search Form -->
+    <div class="search-bar">
+      <form method="get" action="{{ url_for('browse') }}">
+        <input type="text" name="q" placeholder="Search projects..." value="{{ query or '' }}" />
+        <button type="submit">Search</button>
+      </form>
+    </div>
+
+    <!-- Project List -->
+    {% if projects %}
+      {% for project in projects %}
+        <div class="project-card">
+          <h3>{{ project[1] }}</h3>
+          <p>{{ project[2][:80] }}...</p>
+          <a href="{{ url_for('project_detail', id=project[0]) }}">View Details</a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No approved projects found.</p>
+    {% endif %}
+  </section>
+</body>
+</html>
